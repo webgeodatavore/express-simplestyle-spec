@@ -1,0 +1,13 @@
+{
+  "name": "express-simplestyle-spec",
+  "version": "0.1.0",
+  "private": false,
+  "scripts": {
+    "start": "cd demo && node ./app.js"
+  },
+  "dependencies": {
+    "bluebird": "^3.5.1",
+    "express": "^4.15.5",
+    "makizushi": "^1.4.0"
+  }
+}
