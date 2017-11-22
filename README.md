@@ -51,13 +51,13 @@ email, or any other method with the owners of this repository before making a ch
 
 ## Versioning
 
-We use [SemVer](http://semver.org/) for versioning. For the versions available, see the [tags on this repository](https://github.com/your/project/tags).
+We use [SemVer](http://semver.org/) for versioning. For the versions available, see the [tags on this repository](https://github.com/webgeodatavore/express-simplestyle-spec/tags).
 
 ## Authors
 
 * **Thomas Gratier** - *Integration work*
 
-See also the list of [contributors](https://github.com/your/project/contributors) who participated in this project.
+See also the list of [contributors](https://github.com/webgeodatavore/express-simplestyle-spec/contributors) who participated in this project.
 
 ## License
 
