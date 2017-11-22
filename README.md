@@ -21,6 +21,8 @@ You will need [Node.js](https://nodejs.org/en/) installed. As some dependencies 
 
 ### Installing
 
+#### To try the demo
+
 Install dependencies
 
 ```
@@ -43,6 +45,24 @@ http://.../v4/marker/ {base} - {size:s|m|l} [-{letter-or-digit-or-icon-name}] + 
 ```
 
 At this point, only "pin" is supported for the base. The color is a 3 digit or 6 digit hex number. Optional scaling can only be 2x. Beyond the pre-defined maki icons, you may give a number (0-99), a single letter (a-z), or nothing.
+
+#### To use in your own Express project
+
+```
+npm install @webgeodatavore/express-simplestyle-spec
+```
+
+To get the logic, you just have to replace in [the demo](demo/app.js) code the following:
+
+```
+var markers = require('./../index');
+```
+
+with
+
+```
+var markers = require('@webgeodatavore/express-simplestyle-spec');
+```
 
 ## Contributing
 
