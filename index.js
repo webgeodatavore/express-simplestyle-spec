@@ -1,3 +1,5 @@
+// Copyright 2016 - Yuri Astrakhan
+// Copyright 2017 - Thomas Gratier
 'use strict';
 const express = require('express');
 const router = express.Router();
