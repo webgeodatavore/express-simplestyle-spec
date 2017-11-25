@@ -56,7 +56,7 @@
   <body>
     <div id="container">
       <!-- Marker type -->
-      <label>Choose the type of marker (dropdown list) or a number up to 99 you want
+      <label>Choose the type of marker (dropdown list) or a number up to 99 or characters from A to Z
         <input id="choosetype" />
         <button class="dropdown-btn" type="button">
           <span class="caret"></span>
@@ -120,6 +120,12 @@
       img.src = displayUrl.innerHTML = setImageUrl(defaultValues);
 
       let sorting = function(a, b) {
+        if (isNaN(a.label)) {
+          a.label = a.label.toLowerCase();
+        }
+        if (isNaN(b.label)) {
+          b.label = b.label.toLowerCase();
+        }
         if (!isNaN(a.label) && !isNaN(b.label)) {
           return (a.label > b.label) ? 1 : 0;
         } else {
@@ -145,8 +151,9 @@
 
       fetch('all.json').then(response => response.json()).then(json => {
         let list = [
-          ...json.all.map(el => ({label: el, value: el})),
-          ...[...Array(100)].map((_, i) => ({label: i, value: i}))
+          ...json.all.map(el => ({label: el, value: el})), // icons by name
+          ...[...Array(100)].map((_, i) => ({label: i, value: i})), // 0 to 99
+          ...[...Array(26)].map((_, i) => ({label: String.fromCharCode(i + 97).toUpperCase(), value: String.fromCharCode(i + 97)})) // A to Z (value are lowercase)
         ];
 
         let chooseType = document.getElementById('choosetype')
