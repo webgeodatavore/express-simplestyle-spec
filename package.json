@@ -6,8 +6,8 @@
     "start": "cd demo && node ./app.js"
   },
   "dependencies": {
-    "bluebird": "^3.5.1",
+    "@mapbox/makiwich": "0.0.7",
     "express": "^4.15.5",
-    "makizushi": "^1.4.0"
+    "mapnik": "^3.6.2"
   }
 }

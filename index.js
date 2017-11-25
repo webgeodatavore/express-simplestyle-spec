@@ -3,8 +3,9 @@
 'use strict';
 const express = require('express');
 const router = express.Router();
-const Promise = require('bluebird');
-const makizushi = Promise.promisify(require('makizushi'));
+
+var makiwich = require('@mapbox/makiwich');
+var mapnik = require('mapnik');
 
 // marker icon generator  (base, size, symbol, color, scale), with the symbol being optional
 // /v4/marker/pin-m-cafe+7e7e7e@2x.png -- the format matches that of mapbox to simplify their library usage
@@ -26,33 +27,38 @@ function markerHandler(req, res, next) {
     let start = Date.now(),
         params = req.params;
 
-    return Promise.try(() => {
+    if (params.color.length !== 3 && params.color.length !== 6) {
+        throw new Error('Bad color');
+    }
+    let scale;
+    if (params.scale === undefined) {
+        scale = {};
+    } else if (params.scale === '2') {
+        scale = { scale: 2 }
+    } else {
+        throw new Error('Only retina @2x scaling is allowed for marks');
+    }
 
-        if (params.color.length !== 3 && params.color.length !== 6) {
-            throw new Error('Bad color');
-        }
-        let isRetina;
-        if (params.scale === undefined) {
-            isRetina = false;
-        } else if (params.scale === '2') {
-            isRetina = true;
-        } else {
-            throw new Error('Only retina @2x scaling is allowed for marks');
-        }
-
-        return makizushi({
-            base: params.base, // "pin"
-            size: params.size, // s|m|l
-            symbol: params.symbol, // undefined, digit, letter, or maki symol name - https://www.mapbox.com/maki/
-            tint: params.color, // in hex - "abc" or "aabbcc"
-            retina: isRetina // true|false
+    makiwich({
+        tint: params.color,
+        symbol: params.symbol, // Valid Maki v2.1.0 icon
+        size: params.size // `s` or `l`
+    }, (err, svg) => {
+      if (err) {
+        return res.status(500)
+        .json({
+          message: err.message
         });
-    }).then(data => {
-        res.type('png').send(data);
-    }).catch(err => {
-      return res.status(500)
-      .json({
-        message: err.message
+      };
+
+      // Use mapnik to convert the SVG to a PNG and save it
+      var s = new mapnik.Image.fromSVGBytesSync(new Buffer(svg), scale);
+      s.premultiplySync();
+      s.encode('png', {}, function(err, encode) {
+        if (err) {
+          throw err;
+        }
+        res.type('png').send(encode);
       });
-    }).catch(next);
+    });
 }
