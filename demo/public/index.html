@@ -1,0 +1,193 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset=utf-8>
+    <meta name=description content="">
+    <meta name=viewport content="width=device-width, initial-scale=1">
+    <title></title>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/awesomplete/1.1.2/awesomplete.min.js"></script>
+    <link rel="stylesheet" type="text/css" href="https://rawgit.com/LeaVerou/awesomplete/gh-pages/awesomplete.css">
+    <style>
+      .awesomplete > ul {
+        max-height: 300px;
+        overflow-y: auto;
+      }
+      button {
+        padding: .1em .5em;
+        border-radius: .3em;
+        background: hsl(80, 80%, 80%);
+        background: linear-gradient(hsl(40, 70%, 80%), hsl(40, 70%, 70%));
+        border: 1px solid rgba(0,0,0,.3);
+        box-shadow: 0 1px white inset, 0 0.3em 0.3em -0.3em rgba(0,0,0,.3);
+      }
+      input {
+        width: 12em;
+        padding: .1em .3em;
+        border: 0;
+        border: 1px solid hsl(35, 80%, 60%);
+        background: hsla(0,0%,100%,.2);
+        border-radius: .3em;
+        box-shadow: 0.05em 0.1em 0.3em rgba(0,0,0,.3) inset;
+      }
+
+      #container .dropdown-btn {
+        vertical-align: top;
+        height: 20px;
+        border-top-left-radius: 0;
+        border-bottom-left-radius: 0;
+      }
+      #choosetype {
+        border-top-right-radius: 0;
+        border-bottom-right-radius: 0;
+      }
+      #container .caret {
+        display: inline-block;
+        width: 0;
+        height: 0;
+        margin-left: 2px;
+        vertical-align: middle;
+        border-top: 4px dashed;
+        border-top: 4px solid;
+        border-right: 4px solid transparent;
+        border-left: 4px solid transparent;
+      }
+    </style>
+  </head>
+  <body>
+    <div id="container">
+      <!-- Marker type -->
+      <label>Choose the type of marker (dropdown list) or a number up to 99 you want
+        <input id="choosetype" />
+        <button class="dropdown-btn" type="button">
+          <span class="caret"></span>
+        </button>
+      </label>
+      <!-- Marker color -->
+      <br>
+      <br>
+      <label>Choose pin size
+        <select id="choosesize">
+          <option>Small</option>
+          <option>Medium</option>
+          <option selected>Large</option>
+        </select>
+      </label>
+      <br>
+      <br>
+      <label>Choose your color
+        <input id="choosecolor" type="color">
+      </label>
+      <br>
+      <br>
+      <img id="outputimage">
+      <pre id="displayurl">
+
+      </pre>
+      <!-- Marker size -->
+      <!-- Screen use retina -->
+    </div>
+    <script>
+      let defaultValues = {
+        type: 'bus',
+        size: 'l',
+        color: '#ffff00'
+      }
+
+      let displayUrl = document.getElementById('displayurl')
+      let img = document.querySelector('#outputimage');
+
+      var proxied = new Proxy(defaultValues, {
+        set: function(target, prop, value) {
+          if (Reflect.set(target, prop, value)) {
+            img.src = displayUrl.innerHTML = setImageUrl(target);
+            return true;
+          }
+          return false;
+        }
+      });
+
+      let setImageUrl = function(options) {
+        var baseUrl = window.location.host.indexOf('localhost') !== -1 ? window.location.protocol + '//' + window.location.host : 'http://ws.webgeodatavore.com'
+        var url = baseUrl + '/v4/marker/' +
+          'pin-' +
+          // Internet Explorer does not support the `size[0]` syntax.
+          options.size + '-' + options.type + '+' + options.color.replace('#', '') +
+          ((window.devicePixelRatio === 2) ? '@2x' : '') +
+          '.png';
+        return url;
+      }
+
+      img.src = displayUrl.innerHTML = setImageUrl(defaultValues);
+
+      let sorting = function(a, b) {
+        if (!isNaN(a.label) && !isNaN(b.label)) {
+          return (a.label > b.label) ? 1 : 0;
+        } else {
+          if (isNaN(a.label) && isNaN(b.label)) {
+            if(String(a.label) < String(b.label)) {
+              return -1
+            };
+            if(String(a.label) > String(b.label)) {
+              return 1;
+            }
+            return 0;
+          } else {
+            if (!isNaN(a.label) && isNaN(b.label)) {
+                return 1
+            } else {
+              if (isNaN(a.label) && !isNaN(b.label)) {
+                return -1;
+              }
+            }
+          }
+        }
+      }
+
+      fetch('all.json').then(response => response.json()).then(json => {
+        let list = [
+          ...json.all.map(el => ({label: el, value: el})),
+          ...[...Array(100)].map((_, i) => ({label: i, value: i}))
+        ];
+
+        let chooseType = document.getElementById('choosetype')
+        let comboplete = new Awesomplete(chooseType, {
+          minChars: 0,
+          list: list,
+          sort: sorting,
+          filter: Awesomplete.FILTER_STARTSWITH,
+          maxItems: 250
+        });
+
+        document.querySelector('.dropdown-btn').addEventListener("click", function() {
+          if (comboplete.ul.childNodes.length === 0) {
+            comboplete.minChars = 0;
+            comboplete.evaluate();
+          }
+          else if (comboplete.ul.hasAttribute('hidden')) {
+            comboplete.open();
+          }
+          else {
+            comboplete.close();
+          }
+        });
+
+        chooseType.value = 'bus';
+        chooseType.addEventListener('awesomplete-selectcomplete', function(evt){
+          proxied.type = this.value;
+        });
+
+        document.getElementById('choosesize').addEventListener("change", function(evt) {
+          proxied.size = this.options[this.selectedIndex].value.toLowerCase().charAt(0);
+        });
+
+        let colorPicker = document.getElementById('choosecolor');
+        let setColorValue = function(evt) {
+          proxied.color = this.value;
+        }
+        colorPicker.addEventListener('change', setColorValue);
+        colorPicker.addEventListener('input', setColorValue);
+
+      })
+    </script>
+  </body>
+</html>
