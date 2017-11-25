@@ -1,15 +1,15 @@
 # express-simplestyle-spec
 
-This project is intended to ease use of [simplestyle-spec](https://github.com/mapbox/simplestyle-spec) (a simple styling convention for GeoJSON data)
+This project is intended to provide a map icons API for [simplestyle-spec](https://github.com/mapbox/simplestyle-spec) (a simple styling convention for GeoJSON data)
 
 It's only a minimal library to integrate in any Express project or use in a minimal standalone Express project.
 
-The intent is to have a standalone server for map markers. In fact, the `simplestyle` spec is open but the server to load icons isn't. You need a [Mapbox](mapbox.com) account to consume these icons like illustrated in [this example](https://www.mapbox.com/mapbox.js/example/v1.0.0/l-mapbox-marker/). To be fair, Mapbox does provide the library [makizushi](https://github.com/mapbox/makizushi) to generate images from parameters matching the spec.
+The intent is to have a standalone server for map markers. In fact, the `simplestyle` spec is open but the server to load icons isn't. You need a [Mapbox](mapbox.com) account to consume these icons like illustrated in [this example](https://www.mapbox.com/mapbox.js/example/v1.0.0/l-mapbox-marker/). To be fair, Mapbox does provide the library [makiwich](https://github.com/mapbox/makiwich/) to generate images from parameters matching the spec.
 
-We borrowed 99% of the code from the project [@kartotherian/maki](https://github.com/kartotherian/maki) intended for use with Karthotherian, the vector tiles server project by [Wikimedia Foundation](https://wikimediafoundation.org), used within [Wikipedia](https://fr.wikipedia.org/wiki/Centre_de_la_France#/maplink/1).
-For markers, their code relies on previously mentioned `makizushi`.
+We borrowed 90% of the code from the project [@kartotherian/maki](https://github.com/kartotherian/maki) intended for use with Karthotherian, the vector tiles server project by [Wikimedia Foundation](https://wikimediafoundation.org), used within [Wikipedia](https://fr.wikipedia.org/wiki/Centre_de_la_France#/maplink/1).
+For markers, their code relies on *makizushi*, the predecessor of *makiwich*. We made some adaptation to use *makiwich*, a more recent Mapbox library that works with latest Maki icons.
 
-If you goal is to support together vector tiles, static maps and markers, you should consider using [Kartotherian](https://github.com/kartotherian/kartotherian/) instead.
+If you goal is to support together vector tiles, static maps and markers, you may consider using [Kartotherian](https://github.com/kartotherian/kartotherian/) instead.
 
 ## Getting Started
 
